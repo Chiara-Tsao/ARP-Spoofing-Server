@@ -1,7 +1,7 @@
 # ARP-Spoofing-Server
 Client/ Server ARP Spoofing implementation in Windows Form.
 
-## Features
+## Environment
 * .NET 5.0
 * Visual Studio 2019
 * Newtonsoft.Json 13.0.3
