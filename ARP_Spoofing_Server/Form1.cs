@@ -136,42 +136,6 @@ namespace ARP_Spoofing_Server
             }
         }
 
-        async Task ListenAsync(int myPort, int allowNum)
-        {
-            //Parallel.Invoke(action);
-            Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
-            serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-            IPAddress ip = IPAddress.Any;
-            IPEndPoint point = new IPEndPoint(ip, myPort);
-            serverSocket.Bind(point);
-            serverSocket.Listen(allowNum);
-            await Task.Run(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        WriteToLogFile("123");
-                        serverSocket.Accept();
-                    }
-                    catch (SocketException e)
-                    {
-                        WriteToLogFile($"Socket Exception... {e}");
-                    }
-                }
-
-            });
-            WriteToLogFile(("Client IP = " + serverSocket.RemoteEndPoint.ToString()) + " Connect Succese!");
-            // Thread to receive
-            Thread ReceiveMsg = new Thread(ReceiveMsgClient);
-            ReceiveMsg.IsBackground = true;
-
-            // Thread to send
-            Thread SendToClient = new Thread(SendMsgToClient);
-
-            SendToClient.Start(serverSocket);
-            ReceiveMsg.Start(serverSocket);
-        }
         /// <summary>
         /// Server end point
         /// </summary>
@@ -274,11 +238,9 @@ namespace ARP_Spoofing_Server
             deviceData.Device.Open();
             var gatway = deviceData.Device.Interface.GatewayAddresses[0].ToString();
             SpoofARP ArpSpoofer = new SpoofARP(deviceData.Device, ip, ToPhysicalAddressString(mac), gatway, ToPhysicalAddressString(deviceData.Addr.MAC));
-            //WriteToLogFile($"SpoofARP : ip-{ArpSpoofer.DesIpAddresse} mac-{ArpSpoofer.DesMACAddresse}");
 
             await Task.Run(() =>
             {
-                //WriteToLogFile($"SpoofARP : ip-{ArpSpoofer.DesIpAddresse} mac-{ArpSpoofer.DesMACAddresse}");
                 try
                 {
                     ArpSpoofer.SendArpResponsesAsync();
